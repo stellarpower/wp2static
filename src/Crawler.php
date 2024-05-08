@@ -133,7 +133,21 @@ class Crawler {
 
         $requests = function ( $urls ) {
             foreach ( $urls as $url ) {
-                yield new Request( 'GET', $url['url'] );
+                // We get some invalid URLs somehow; 
+                // Just log and  carry on anyway
+                try {    
+                    $request =        new Request( 'GET', $url['url'] );
+                } catch (\InvalidArgumentException $e)  {
+
+                    $message = "WP2Static Failed to crawl URL " . $url['url'];
+                    
+                    error_log($message);
+                    WsLog::l( $message);
+
+                    continue;
+                }
+
+                yield $request;
             }
         };
 
